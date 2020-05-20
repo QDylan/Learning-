@@ -24,7 +24,9 @@
 
 """
 
+
 class Solution:
+
     def waysToChange(self, n: int) -> int:
 
         # # 1.动态规划 完全背包问题
@@ -36,7 +38,7 @@ class Solution:
         #         dp[i] += dp[i-c]
         # return dp[-1] % 1000000007
 
-        # 2.数学推导
+        # 2.数学推导 （速度快，应用于len(coins)=4）
         res = 0
         for i in range(n//25+1):  # 选用多少个25分硬币
             rest = n-25*i  # 剩余的金额r
@@ -47,6 +49,6 @@ class Solution:
             # 即r'有2r1+r2-2x+1种组成方案
             # 对 (2r1+r2-2x+1), x从0->r1求和得
             # sum = (2r1+r2+1)*(r1+1)-2(0+r1)*(r1+1)/2 = (r1+r2+1)*(r1+1)
-            rest1, rest2 = rest//10, rest%10//5
+            rest1, rest2 = rest//10, rest % 10//5
             res += (rest1+1)*(rest1+rest2+1)
         return res % 1000000007
