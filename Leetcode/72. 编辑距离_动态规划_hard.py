@@ -58,7 +58,7 @@ class Solution:
 
         return dp1[-1]
 
-        # dp = [j for j in range(len2+1)]  # 进一步压缩
+        # dp = [j for j in range(len2+1)]  # 进一步压缩，只是用一个一维数组
         # for i in range(1, len1 + 1):
         #     prev = dp[0]
         #     dp[0] = i
