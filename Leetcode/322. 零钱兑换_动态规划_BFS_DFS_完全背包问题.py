@@ -4,7 +4,7 @@
  @Author  : QDY
  @FileName: 322. 零钱兑换_动态规划_BFS_DFS_完全背包问题.py
 
- 给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+    给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
 
     示例 1:
     输入: coins = [1, 2, 5], amount = 11
@@ -23,7 +23,8 @@
 
 class Solution:
     def coinChange(self, coins, amount):
-        if amount == 0: return 0
+        if amount == 0:
+            return 0
         # 完全背包问题
 
         # # 1.动态规划
@@ -43,14 +44,14 @@ class Solution:
         coins.sort(reverse=True)  # 将硬币按金额大小降序排序
         length = len(coins)
 
-        def dfs(num, cur_amount, i):
+        def dfs(num, cur_amount, i_):
             nonlocal res
             # num = 已使用的硬币数
             # cur_amount = 当前的剩余金额
             # i = 只能使用id在i之后和coins补充剩余金额
             if cur_amount == 0:  # 剩余金额恰好为0，则找到了一种组合方案
                 res = min(res, num)
-            for j in range(i, length):
+            for j in range(i_, length):
                 # 若res-num个coins[j]无法补充剩余金额，则其之后的硬币也不用再尝试了
                 if coins[j] * (res - num) < cur_amount:  # 因为其一定无法实现少于res个硬币组合出amount
                     break  # 一种剪枝手段
