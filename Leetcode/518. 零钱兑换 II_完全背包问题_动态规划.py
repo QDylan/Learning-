@@ -4,7 +4,8 @@
  @Author  : QDY
  @FileName: 518. 零钱兑换 II_完全背包问题_动态规划.py
 
- 给定不同面额的硬币和一个总金额。写出函数来计算可以凑成总金额的硬币组合数。假设每一种面额的硬币有无限个。 
+    给定不同面额的硬币和一个总金额。写出函数来计算可以凑成总金额的硬币组合数。
+    假设每一种面额的硬币有无限个。 
 
     示例 1:
     输入: amount = 5, coins = [1, 2, 5]
@@ -36,7 +37,8 @@
 
 class Solution:
     def change(self, amount, coins):
-        if amount == 0: return 1
+        if amount == 0:
+            return 1
         # 完全背包问题
 
         # 1.动态规划
