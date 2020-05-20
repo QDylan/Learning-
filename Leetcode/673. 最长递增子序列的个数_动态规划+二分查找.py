@@ -22,6 +22,7 @@
 class Solution:
     def findNumberOfLIS(self, nums):
         if not nums: return 0
+
         # # 1.动态规划 时间复杂度O(n^2)
         # # dp[i] = [以nums[i]结尾的最长递增子序列的长度,数量]
         # dp = [[1,1]]*len(nums)
@@ -66,7 +67,7 @@ class Solution:
                 if r >= 0:  # 若right<0，则说明dp[-1][][0]都小于nums[i]
                     tmp = dp[-1][r][1]
                 dp.append([[nums[i], dp[-1][-1][1] - tmp]])
-            else:
+            else:  # 添加到dp[left]位置上
                 if left > 0:  # 若left>0，则长度为left的以大于等于nums[i]的结尾的子序列的数量
                     tmp = 0  # == dp[left][-1][1]+dp[left-1][-1][1]-dp[left-1][大于等于nums[i]的最右位置][1]
                     l, r = 0, len(dp[left - 1]) - 1  # dp[left-1][][0]为降序排序
