@@ -27,7 +27,7 @@ class Solution:
     def validPalindrome(self, s):
         length = len(s)
         for i in range((length - 1) // 2):
-            if s[i] != s[length - 1 - i]:  # 当遇到左右不相等的时候，有一次删除的机会，删除其中一个元素后，中间剩下的字符串要能是回文
+            if s[i] != s[length - 1 - i]:  # 当遇到左右不相等的时候，有一次删除的机会
                 a, b = s[i:length - 1 - i], s[i + 1:length - i]
-                return a == a[::-1] or b == b[::-1]
+                return a == a[::-1] or b == b[::-1]  # 删除两边其中一个，判断剩下的字符串是否构成回文
         return True
