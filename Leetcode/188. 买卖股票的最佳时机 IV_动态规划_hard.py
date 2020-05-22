@@ -33,26 +33,19 @@ class Solution:
                 res += max(0, prices[i] - prices[i - 1])
             return res
 
-        # dp1[i][j] 表示在第i天，已经进行了j次交易，手上有股票的利润
-        # dp0[i][j] 表示在第i天，已经进行了j次交易，手上没有股票的利润
+        # dp[i][j][1] 表示在第i天，已经进行了j次交易，手上有股票的利润
+        # dp[i][j][0] 表示在第i天，已经进行了j次交易，手上没有股票的利润
         # Base case:
-        # dp1[0][j] = -float('inf'), dp0[0][j] = 0
-        # dp1[i][0] = -float('inf'), dp0[i][0] = 0
+        # dp[0][j][1] = -float('inf'), dp[0][j][0] = 0
+        # dp[i][0][1] = -float('inf'), dp[i][0][0] = 0
         # 状态转移：
-        # dp1[i][j] = max(dp1[i-1][j],dp0[i-1][j-1]-prices[i-1])  # 是否买入第i天的股票
-        # dp0[i][j] = max(dp0[i-1][j],dp1[i-1][j]+prices[i-1])  # 是否在第i天把股票卖出
+        # dp[i][j][1] = max(dp[i-1][j][1],dp[i-1][j-1][0]-prices[i-1])  # 是否买入第i天的股票
+        # dp[i][j][0] = max(dp[i-1][j][0],dp[i-1][j][1]+prices[i-1])  # 是否在第i天把股票卖出
 
-        dp1_prev = [-float('inf')] * (k + 1)
-        dp0_prev = [0] * (k + 1)
-        dp0_cur = [0] * (k + 1)
-        dp1_cur = [-float('inf')] + [0] * k
+        dp = [[0, -float('inf')] for i in range(k + 1)]
 
         for i in range(days):
-            # print(dp0_prev,dp1_prev)
-            for j in range(1, k + 1):
-                dp0_cur[j] = max(dp0_prev[j], dp1_prev[j] + prices[i])
-                dp1_cur[j] = max(dp1_prev[j], dp0_prev[j - 1] - prices[i])
-            dp1_prev, dp1_cur = dp1_cur, [-float('inf')] + [0] * k
-            dp0_prev, dp0_cur = dp0_cur, [0] * (k + 1)
+            for j in range(k, 0, -1):
+                dp[j][0], dp[j][1] = max(dp[j][0], dp[j][1] + prices[i]), max(dp[j][1], dp[j - 1][0] - prices[i])
 
-        return dp0_prev[-1]
+        return dp[-1][0]
