@@ -39,8 +39,8 @@ class Solution:
         # dp1[0][j] = -float('inf'), dp0[0][j] = 0
         # dp1[i][0] = -float('inf'), dp0[i][0] = 0
         # 状态转移：
-        # dp1[i][j] = max(dp1[i-1][j],dp0[i-1][j-1]-prices[i+1])  # 是否买入第i天的股票
-        # dp0[i][j] = max(dp0[i-1][j],dp1[i-1][j]+prices[i+1])  # 是否在第i天把股票卖出
+        # dp1[i][j] = max(dp1[i-1][j],dp0[i-1][j-1]-prices[i-1])  # 是否买入第i天的股票
+        # dp0[i][j] = max(dp0[i-1][j],dp1[i-1][j]+prices[i-1])  # 是否在第i天把股票卖出
 
         dp1_prev = [-float('inf')] * (k + 1)
         dp0_prev = [0] * (k + 1)
