@@ -96,35 +96,48 @@ class Solution:
 
 
 def rob_3(self, root):
-    if root is None:
-        return 0
 
-    def post_count(root):
-        # 后序遍历计算
-        if root.left is not None:
-            self.post_count(root.left)
+    def dp(root):  # 返回一个大小为2的数组arr,arr[0]表示不抢root得到的最大钱数,arr[1]表示抢root得到的最大钱数
+        if not root:
+            return [0, 0]
+        left = dp(root.left)
+        right = dp(root.right)
+        rob = root.val + left[0] + right[0]
+        not_rob = max(left) + max(right)
 
-        if root.right is not None:
-            self.post_count(root.right)
+        return [rob, not_rob]
 
-        unchoose = 0  # 不选择根节点
-        choose = root.val  # 选择根节点
+    return max(dp(root))
 
-        if root.left is not None:
-            unchoose += root.left.val
-            if root.left.left is not None:
-                choose += root.left.left.val
-            if root.left.right is not None:
-                choose += root.left.right.val
 
-        if root.right is not None:
-            unchoose += root.right.val
-            if root.right.left is not None:
-                choose += root.right.left.val
-            if root.right.right is not None:
-                choose += root.right.right.val
-
-        root.val = max(unchoose, choose)
-
-    post_count(root)
-    return root.val
+    # if root is None:
+    #     return 0
+    # def post_count(root):
+    #     # 后序遍历计算
+    #     if root.left is not None:
+    #         post_count(root.left)
+    #
+    #     if root.right is not None:
+    #         post_count(root.right)
+    #
+    #     unchoose = 0  # 不选择根节点
+    #     choose = root.val  # 选择根节点
+    #
+    #     if root.left is not None:
+    #         unchoose += root.left.val
+    #         if root.left.left is not None:
+    #             choose += root.left.left.val
+    #         if root.left.right is not None:
+    #             choose += root.left.right.val
+    #
+    #     if root.right is not None:
+    #         unchoose += root.right.val
+    #         if root.right.left is not None:
+    #             choose += root.right.left.val
+    #         if root.right.right is not None:
+    #             choose += root.right.right.val
+    #
+    #     root.val = max(unchoose, choose)
+    #
+    # post_count(root)
+    # return root.val
