@@ -27,3 +27,27 @@
     解释：从 nums1 中得到子序列 [-1] ，从 nums2 中得到子序列 [1] 。
     它们的点积为 -1 。
 """
+
+
+class Solution:
+    def maxDotProduct(self, nums1, nums2):
+        # if all(n1<=0 for n1 in nums1) and all(n2>=0 for n2 in nums2):return max(nums1)*min(nums2)
+        # if all(n1>=0 for n1 in nums1) and all(n2<=0 for n2 in nums2):return min(nums1)*max(nums2)
+
+        # 动态规划
+        # dp[i][j] 表示nums1[:i]与nums2[:j]的最大点积
+        # dp[i][j] = max(1.不选择nums1[i-1]]:dp[i-1][j],
+        #                2.不选择nums2[j-1]:dp[i][j-1],
+        #                3. 只选择nums1[i-1]和nums2[j-1]:nums1[i-1]*nums2[j-1](因为之前的点积都是负的)
+        #                4. 新选择nums1[i-1]和nums[j-1]: dp[i-1][j-1]+nums1[i-1]*nums2[j-1],
+        #                )
+        len1, len2 = len(nums1), len(nums2)
+        dp_prev = [-float('inf')] * (len2 + 1)
+        dp_cur = [-float('inf')] * (len2 + 1)
+        for i in range(1, len1 + 1):
+            for j in range(1, len2 + 1):
+                x = nums1[i - 1] * nums2[j - 1]
+                dp_cur[j] = max(dp_prev[j], dp_cur[j - 1], x, dp_prev[j - 1] + x)
+                # dp_cur[j] = max(dp_prev[j],dp_cur[j-1],dp_prev[j-1]+nums1[i-1]*nums2[j-1])
+            dp_prev, dp_cur = dp_cur, [-float('inf')] * (len2 + 1)
+        return dp_prev[-1]
