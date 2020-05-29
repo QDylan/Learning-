@@ -105,7 +105,7 @@ def rob_3(self, root):
         rob = root.val + left[0] + right[0]  # 抢根节点+不抢左节点和右节点能获得的最大金额
         not_rob = max(left) + max(right)  # 不抢根节点+抢左节点和不抢左节点的最大金额+抢右节点和不抢右节点的最大金额
 
-        return [rob, not_rob]
+        return [not_rob, rob]
 
     return max(dp(root))
 
