@@ -57,10 +57,12 @@ sum(balls) 是偶数
 """
 
 import math, itertools
-
+# math.factorial 阶乘
+# math.prod 连乘
+# itertools.product 对生成器做笛卡尔积
 
 class Solution:
-    def multinomial(self, n):  # 计算n=[n0,n1,n2,...]所有可能的组合序列个数为
+    def multinomial(self, n):  # 计算n=[n0,n1,n2,...]所有可能的组合序列个数
         return math.factorial(sum(n)) / math.prod([math.factorial(i) for i in n])
 
     def getProbability(self, balls):
