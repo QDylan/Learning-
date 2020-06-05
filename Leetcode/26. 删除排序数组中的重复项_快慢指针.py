@@ -31,7 +31,6 @@
 
 """
 
-
 class Solution:
     def removeDuplicates(self, nums):
         # 由于数组已经排序，所以重复的元素一定连在一起，找出它们并不难，
@@ -63,5 +62,6 @@ class Solution:
             else:
                 slow += 1
                 nums[slow] = nums[fast]
-        nums = nums[:slow + 1]
-        return slow + 1
+        nums = nums[:slow+1]
+        return slow+1
+
