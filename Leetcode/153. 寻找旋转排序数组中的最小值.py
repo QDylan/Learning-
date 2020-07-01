@@ -28,7 +28,7 @@ class Solution:
         while l < r:
             m = l + (r - l) // 2
             if nums[r] > nums[m]:  # 右边数组是有序的，最小值为nums[r]
-                r = m  # 最小值（旋转点）在nums[l:r+1]中
-            else:  # 右边数组是乱序的，最小值点（旋转点）在右边数组中
+                r = m  # 最小值（旋转点）在左边数组nums[l:m+1]中
+            else:  # 右边数组是乱序的，最小值点（旋转点）在右边数组nums[m+1:r]中
                 l = m + 1
         return nums[l]
