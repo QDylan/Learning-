@@ -40,15 +40,15 @@ for pos, char in enumerate(s):
 # 对于左边位置i和右边位置j,若只需将这两个字母移动到一起，需要固定的vec[j]-vec[i]-1次
 # 但这个区间内已经有移动好的j-i-1个字母，所以可以减去这么j-i-1次
 res = 0
-for char,vec in d.items():  # vec记录字母char在原字符串中的位置
+for char, vec in d.items():  # vec记录字母char在原字符串中的位置
     n = len(vec)  # 字母char在s中出现的次数
-    dp = [[0]*n for _ in range(n)]
-    for i in range(1,n):  # 最近的两个char移动在一起
-        dp[i-1][i] = vec[i]-vec[i-1]-1
-    for i in range(2,n):  # 间隔从2开始,直到n-1（表示对第一个char和最后一个char）
-        for j in range(n-i):
-            left, right = j, j+i  # 左侧从0开始，直到n-i；右侧从j+i开始，直到n
-            dp[left][right] = dp[left+1][right-1]+vec[right]-vec[left]-1-(i-1)
+    dp = [[0] * n for _ in range(n)]
+    for i in range(1, n):  # 最近的两个char移动在一起
+        dp[i - 1][i] = vec[i] - vec[i - 1] - 1
+    for i in range(2, n):  # 间隔从2开始,直到n-1（表示对第一个char和最后一个char）
+        for j in range(n - i):
+            left, right = j, j + i  # 左侧从0开始，直到n-i；右侧从j+i开始，直到n
+            dp[left][right] = dp[left + 1][right - 1] + vec[right] - vec[left] - 1 - (i - 1)
             # i=2时，dp[left+1][right-1]==0,  (i-1)表示left和right中间有多少个char
             #  减去(i=2)-1表示：left移动到中间的char的左侧时，再移动right到中间的char的右侧，可以少移动一位
             # 间隔i越大，可以减去的步数越多
@@ -58,6 +58,6 @@ for char,vec in d.items():  # vec记录字母char在原字符串中的位置
     for i in range(n):
         for j in range(i, n):
             if dp[i][j] <= num:  # 满足移动步数的限制
-                res = max(res, j-i+1)
+                res = max(res, j - i + 1)
     print(dp)
 print(res)

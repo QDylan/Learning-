@@ -31,7 +31,7 @@ import bisect
 
 
 class Solution:
-    def findBestValue(self, arr, target):  
+    def findBestValue(self, arr, target):
         arr.sort()
         length = len(arr)
         prefix = [0]

@@ -1,11 +1,275 @@
 <meta charset="utf-8">
 
+#  准备数据
+##  在tensorflow中准备图片数据的常用方案有两种:
+### 第一种是使用tf.keras中的ImageDataGenerator工具构建图片数据生成器。
+
+参考https://zhuanlan.zhihu.com/p/67466552
+
+```
+
+from keras.preprocessing.image import ImageDataGenerator
+
+train_dir = 'cifar2_datasets/train'
+test_dir = 'cifar2_datasets/test'
+
+# (1)对训练集数据设置数据增强
+train_datagen = ImageDataGenerator(
+                rescale = 1./255,
+                rotation_range=40,
+                width_shift_range=0.2,
+                height_shift_range=0.2,
+                shear_range=0.2,
+                zoom_range=0.2,
+                horizontal_flip=True,
+                fill_mode='nearest')
+
+# (2)对测试集数据无需使用数据增强
+test_datagen = ImageDataGenerator(rescale=1./255)
+```
+
+数据增强相关参数说明：
+
+rotation_range是角度值（在 0~180 范围内），表示图像随机旋转的角度范围。
+
+width_shift 和 height_shift 是图像在水平或垂直方向上平移的范围（相对于总宽 度或总高度的比例）。
+
+shear_range是随机错切变换的角度。
+
+zoom_range是图像随机缩放的范围。
+
+horizontal_flip 是随机将一半图像水平翻转。如果没有水平不对称的假设（比如真实世界的图像），
+这种做法是有意义的。
+
+fill_mode是用于填充新创建像素的方法，这些新像素可能来自于旋转或宽度/高度平移。
 
 
+使用ImageDataGenerator的flow_from_directory方法可以从文件夹中导入图片数据，
+转换成固定尺寸的张量，这个方法将得到一个可以读取图片数据的生成器generator。
+
+```
+#(3)
+train_generator = train_datagen.flow_from_directory(
+                        train_dir,
+                        target_size=(32, 32),
+                        batch_size=32,
+                        shuffle = True,
+                        class_mode='binary')
+#(4）
+test_generator = test_datagen.flow_from_directory(
+                        test_dir,
+                        target_size=(32, 32),
+                        batch_size=32,
+                        shuffle = False,
+                        class_mode='binary')
+```
 
 
+### 第二种是使用tf.data.Dataset搭配tf.image中的一些图片处理方法构建数据管道。
+TensorFlow的原生方法，更加灵活，使用得当的话也可以获得更好的性能。
+```
+import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
+
+BATCH_SIZE = 100
+tmp = None
+def load_image(img_path, size=(32,32)):  # 加载并处理图片
+    # automobile的标注为1，airplane的标注为0  # windows下要将".*/automobile/.*"改为".*automobile.*"
+    label = tf.constant(1,tf.int8) if tf.strings.regex_full_match(img_path,".*automobile.*") \
+            else tf.constant(0,tf.int8)
+    img = tf.io.read_file(img_path)  # 从路径中读取图片
+    img = tf.image.decode_jpeg(img)  # 把JPEG格式的图片解码
+    img = tf.image.resize(img, size)/255.0  # 调整尺寸为size,再把像素调整到0~1之间
+    return (img,label)
+
+#使用并行化预处理num_parallel_calls 和预存数据prefetch来提升性能 shuffle:洗牌
+ds_train = tf.data.Dataset.list_files(".\\data\\cifar2\\train\\*\\*.jpg") \
+            .map(load_image, num_parallel_calls=tf.data.experimental.AUTOTUNE) \
+            .shuffle(buffer_size = 1000).batch(BATCH_SIZE) \
+            .prefetch(tf.data.experimental.AUTOTUNE)
+
+ds_test = tf.data.Dataset.list_files(".\\data\\cifar2\\test\\*\\*.jpg") \
+            .map(load_image, num_parallel_calls=tf.data.experimental.AUTOTUNE) \
+            .batch(BATCH_SIZE) \
+            .prefetch(tf.data.experimental.AUTOTUNE)
+```
+
+# 定义模型
+
+## 使用Sequential按层顺序构建模型
+```
+tf.keras.backend.clear_session()
+model = models.Sequential()
+model.add(layers.Dense(20,activation='relu',input_shape=(15,)))
+model.add(layers.Dense(10,activation='relu'))
+model.add(layers.Dense(1,activation='sigmoid'))
+model.summary()
+```
+## 使用函数式API构建任意结构模型
+```
+tf.keras.backend.clear_session() #清空会话
+
+inputs = layers.Input(shape=(32,32,3))
+x = layers.Conv2D(32,kernel_size=(3,3))(inputs)
+x = layers.MaxPool2D()(x)
+x = layers.Conv2D(64,kernel_size=(5,5))(x)
+x = layers.MaxPool2D()(x)
+x = layers.Dropout(rate=0.1)(x)
+x = layers.Flatten()(x)
+x = layers.Dense(32,activation='relu')(x)
+outputs = layers.Dense(1,activation = 'sigmoid')(x)
+
+model = models.Model(inputs = inputs,outputs = outputs)
+
+model.summary()
+```
+## 继承Model基类构建自定义模型
 
 
+# 训练模型
+
+## 内置fit方法
+
+### 对于generator的数据
+```
+# 计算每轮次需要的步数
+import numpy as np
+train_steps_per_epoch  = np.ceil(10000/32)
+test_steps_per_epoch  = np.ceil(2000/32)
+
+# 使用内存友好的fit_generator方法进行训练
+history = model.fit_generator(
+                train_generator,
+                steps_per_epoch = train_steps_per_epoch,
+                epochs = 5,
+                validation_data= test_generator,
+                validation_steps=test_steps_per_epoch,
+                workers=1, # 读取数据的进程数
+                use_multiprocessing=False #linux上可使用多进程读取数据
+                )
+```
+
+### 对于tf.data.Dataset构建的数据管道
+
+```
+logdir = ".\\data\\keras_model\\" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+# 设置回调
+tensorboard_callback = tf.keras.callbacks.TensorBoard(logdir, histogram_freq=1)
+# 编译模型
+model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+            loss=tf.keras.losses.binary_crossentropy,
+            metrics=["accuracy"]
+            )
+# 使用fit方法
+history = model.fit(ds_train,epochs= 10,validation_data=ds_test,
+                        callbacks = [tensorboard_callback],workers = 4)
+```
+
+## 内置train_on_batch方法
+
+## 自定义训练循环
+
+# 评估模型
+
+##  generator
+```
+from sklearn.metrics import roc_auc_score
+
+test_datagen = ImageDataGenerator(rescale=1./255)
+
+# 注意，使用模型进行预测时要设置生成器shuffle = False
+test_generator = test_datagen.flow_from_directory(
+                                    test_dir,
+                                    target_size=(32, 32),
+                                    batch_size=32,
+                                    class_mode='binary',
+                                    shuffle = False)
+
+# 计算auc
+y_pred = model.predict_generator(test_generator,steps = len(test_generator))
+y_pred = np.reshape(y_pred,(-1,))
+y_true = np.concatenate([test_generator[i][1]
+for i in range(len(test_generator))])
+auc = roc_auc_score(y_true,y_pred)
+print('test auc:',auc)
+```
+## 管道
+```
+#%load_ext tensorboard
+#%tensorboard --logdir ./data/keras_model
+from tensorboard import notebook
+notebook.list()
+#在tensorboard中查看模型
+# notebook.start("--logdir ./data/keras_model") # Linux
+notebook.start("--logdir .\\data\\keras_model")
+
+import pandas as pd
+dfhistory = pd.DataFrame(history.history)
+dfhistory.index = range(1,len(dfhistory) + 1)
+dfhistory.index.name = 'epoch'
+
+dfhistory
+
+#可以使用evaluate对数据进行评估
+val_loss,val_accuracy = model.evaluate(ds_test,workers=4)
+print(val_loss,val_accuracy)
+
+model.predict(ds_test)
+
+for x,y in ds_test.take(1):
+print(model.predict_on_batch(x[0:20]))
+```
+
+# 保存模型
+
+## Keras方式
+
+```
+# 1.1保存模型结构及权重
+
+model.save('./data/keras_model.h5')
+
+del model  #删除现有模型
+
+# identical to the previous one
+model = models.load_model('./data/keras_model.h5')
+model.evaluate(x_test,y_test)
+
+# 1.2.1 保存模型结构
+json_str = model.to_json()
+
+# 1.2.2 恢复模型结构
+model_json = models.model_from_json(json_str)
+
+# 1.3.1 保存模型权重
+model.save_weights('./data/keras_model_weight.h5')
+
+# 1.3.2 恢复模型结构
+model_json = models.model_from_json(json_str)
+        model_json.compile(
+        optimizer='adam',
+        loss='binary_crossentropy',
+        metrics=['AUC']
+        )
+
+# 1.3.3 加载权重
+model_json.load_weights('./data/keras_model_weight.h5')
+model_json.evaluate(x_test,y_test)
+```
+
+## TF原生
+```
+#2.1 保存权重，该方式仅仅保存权重张量
+model.save_weights('./data/tf_model_weights.ckpt',save_format = "tf")
+#2.2 保存模型结构与模型参数到文件,该方式保存的模型具有跨平台性便于部署
+
+model.save('./data/tf_model_savedmodel', save_format="tf")
+print('export saved model.')
+
+model_loaded = tf.keras.models.load_model('./data/tf_model_savedmodel')
+model_loaded.evaluate(ds_test)
+```
 
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

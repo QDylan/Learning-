@@ -34,7 +34,7 @@
 
 """
 import bisect
-
+chr
 
 class ExamRoom(object):
     def __init__(self, N):

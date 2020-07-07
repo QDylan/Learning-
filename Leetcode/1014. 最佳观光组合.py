@@ -27,7 +27,7 @@ class Solution:
         # 求最大的 左边界A[i]+i + 右边界A[j]-j
         max_left = A[0]
         for i in range(1, len(A)):
-            res = max(res, max_left + A[i] - i)  # 更新最大值
+            res = max(res, max_left + A[i] - i)  # 更新最大值4.75+4.94
             max_left = max(max_left, A[i] + i)  # 更新左边界
 
         return res

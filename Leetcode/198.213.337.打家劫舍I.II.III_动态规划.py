@@ -100,7 +100,7 @@ def rob_3(self, root):
     def dp(root):  # 返回一个大小为2的数组arr,arr[0]表示不抢root得到的最大钱数,arr[1]表示抢root得到的最大钱数
         if not root:
             return [0, 0]
-        left = dp(root.left)  #
+        left = dp(root.left)
         right = dp(root.right)
         rob = root.val + left[0] + right[0]  # 抢根节点+不抢左节点和右节点能获得的最大金额
         not_rob = max(left) + max(right)  # 不抢根节点+抢左节点和不抢左节点的最大金额+抢右节点和不抢右节点的最大金额
