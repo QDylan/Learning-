@@ -26,29 +26,31 @@ dictionary中总字符数不超过 150000。
 你可以认为dictionary和sentence中只包含小写字母。
 
 """
+
+
 class Solution:
-    def respace(self, dictionary: List[str], sentence: str) -> int:
+    def respace(self, dictionary, sentence):
         trie = {}
         for word in dictionary:
             len_w = len(word)
             cur = trie
-            for i in range(len_w-1,-1,-1):
+            for i in range(len_w - 1, -1, -1):
                 if word[i] not in cur:
-                    cur[word[i]] = {'valid':False}
+                    cur[word[i]] = {'valid': False}
                 cur = cur[word[i]]
-            cur['valid']=True
+            cur['valid'] = True
 
         len_s = len(sentence)
         # 动态规划 dp[i]=sentence[:i]的未识别字符数
-        dp = [i for i in range(len_s+1)]
+        dp = [i for i in range(len_s + 1)]
         for i in range(len_s):
-            dp[i+1] = dp[i]+1  #
+            dp[i + 1] = dp[i] + 1  #
             if sentence[i] in trie:
-                cur,j = trie,i
-                while j>=0 and sentence[j] in cur:
+                cur, j = trie, i
+                while j >= 0 and sentence[j] in cur:
                     cur = cur[sentence[j]]
                     if cur['valid']:
-                        dp[i+1] = min(dp[i+1],dp[j])
+                        dp[i + 1] = min(dp[i + 1], dp[j])
                     j -= 1
         # print(dp)
         return dp[len_s]
