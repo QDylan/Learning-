@@ -62,6 +62,8 @@
 
 """
 from collections import deque
+
+
 class Solution:
     def updateBoard(self, board, click):
         if board[click[0]][click[1]] == 'M':
@@ -69,41 +71,43 @@ class Solution:
             return board
 
         h, w = len(board), len(board[0])
-        # def dfs(x,y):
-        #     board[x][y] = 0
-        #     tmp = []
-        #     for x_,y_ in ((x+1,y+1),(x,y+1),(x-1,y+1),(x+1,y),(x-1,y),(x+1,y-1),(x,y-1),(x-1,y-1)):
-        #         if 0<=x_<h and 0<=y_<w:
-        #             if board[x_][y_] in ('M','X'):
-        #                 board[x][y] += 1
-        #             elif board[x_][y_] == 'E':
-        #                 tmp.append((x_,y_))
-        #     if board[x][y] == 0:
-        #         board[x][y] = 'B'
-        #         for x_,y_ in tmp:
-        #             dfs(x_,y_)
-        #     else: board[x][y] = str(board[x][y])
+
+        def mine_count(x, y):
+            res = 0
+            for dx in (-1, 1, 0):
+                for dy in (-1, 1, 0):
+                    if 0 <= x + dx < h and 0 <= y + dy < w and board[x + dx][y + dy] in ('M', 'X'):
+                        res += 1
+            return res
+
+        def dfs(x, y):
+            board[x][y] = mine_count(x, y)
+            if board[x][y] == 0:
+                board[x][y] = 'B'
+                for dx in (-1, 1, 0):
+                    for dy in (-1, 1, 0):
+                        nxt_x, nxt_y = x + dx, y + dy
+                        if 0 <= nxt_x < h and 0 <= nxt_y < w and board[nxt_x][nxt_y] == 'E':
+                            dfs(nxt_x, nxt_y)
+            else:
+                board[x][y] = str(board[x][y])
+
         # dfs(click[0],click[1])
 
-        q = deque([(click[0],click[1])])
-        visited = {(click[0],click[1])}
+        q = deque([(click[0], click[1])])
         while q:
             length = len(q)
             for i in range(length):
-                x,y = q.popleft()
-                board[x][y] = 0
-                tmp = []
-                for x_,y_ in ((x+1,y+1),(x,y+1),(x-1,y+1),(x+1,y),(x-1,y),(x+1,y-1),(x,y-1),(x-1,y-1)):
-                    if 0<=x_<h and 0<=y_<w:
-                        if board[x_][y_] in ('M','X'):
-                            board[x][y] += 1
-                        elif board[x_][y_] == 'E':
-                            tmp.append((x_,y_))
+                x, y = q.popleft()
+                board[x][y] = mine_count(x, y)
                 if board[x][y] == 0:
                     board[x][y] = 'B'
-                    for x_,y_ in tmp:
-                        if (x_,y_) not in visited:
-                            visited.add((x_,y_))
-                            q.append((x_,y_))
-                else:board[x][y] = str(board[x][y])
+                    for dx in (-1, 1, 0):
+                        for dy in (-1, 1, 0):
+                            nxt_x, nxt_y = x + dx, y + dy
+                            if 0 <= nxt_x < h and 0 <= nxt_y < w and board[nxt_x][nxt_y] == 'E':
+                                q.append((nxt_x, nxt_y))
+                                board[nxt_x][nxt_y] = 'B'
+                else:
+                    board[x][y] = str(board[x][y])
         return board
