@@ -27,6 +27,7 @@
 
 
 class Solution:
+
     def calculateMinimumHP(self, dungeon):
         hei, wid = len(dungeon), len(dungeon[0])
         # 动态规划
@@ -67,3 +68,4 @@ class Solution:
         #         dfs(x,y+1,cur,min_hp)
         # dfs(0,0,0,0)
         # return self.res
+

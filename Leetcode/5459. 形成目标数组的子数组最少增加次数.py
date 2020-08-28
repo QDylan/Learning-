@@ -48,3 +48,5 @@ class Solution:
             if target[i] > target[i - 1]:
                 res += target[i] - target[i - 1]
         return res
+
+
