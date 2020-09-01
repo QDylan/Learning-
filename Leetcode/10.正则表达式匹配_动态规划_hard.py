@@ -55,15 +55,15 @@ class Solution:
     def isMatch(self,s,p):
         if not p:return not s
         len_s,len_p = len(s),len(p)
-        # dp = [[False]*(len_p+1) for i in range(len_s+1)]  # dp[i][j] 表示 s 的前 i 个是否能被 p 的前 j 个匹配
-        # dp[0][0] = True  # 表示空字符能匹配空字符
-        # for j in range(1,len_p+1):  # 对于空字符串s[:0],只有x***能匹配,p[0]!='*'肯定不匹配
-        #     dp[0][j] = j>1 and p[j-1]== '*' and dp[0][j-2]  # 初始化第一行
+        # dp = [[False]*(len_p+1) for i in range(len_s+1)] # dp[i][j] 表示 s 的前 i 个是否能被 p 的前 j 个匹配
+        # dp[0][0] = True # 表示空字符能匹配空字符
+        # for j in range(1,len_p+1): # 对于空字符串s[:0],只有x***能匹配,p[0]!='*'肯定不匹配
+        #     dp[0][j] = j>1 and p[j-1]== '*' and dp[0][j-2] # 初始化第一行
         # for i in range(1,len_s+1):
-        #     for j in range(1,len_p+1):  # 对于s[:i]
+        #     for j in range(1,len_p+1): # 对于s[:i]
         #         if p[j-1] != '*':  # p的当前字符不是*
         #             dp[i][j] = dp[i-1][j-1] and p[j-1] in {s[i-1], '.'}
-        #         else:  # p[j-1]=='*'时
+        #         else: # p[j-1]=='*'时
         #         # 1. 若p[:j-2]能匹配s[:i],则 p[j-2]p[j-1]可表示为空字符串, dp[i][j]=dp[i][j-2]
         #         # 2. 若p[:j]能匹配s[:i-1],那么加上一个s[i-1]是否还能匹配呢？
         #         #    若p[j-2]能与s[i-1]匹配，那么相当于在s[:i-1]结尾加上与结尾相同的字符
