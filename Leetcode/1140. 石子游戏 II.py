@@ -36,12 +36,10 @@ class Solution:
             suffix.append(suffix[-1] + i)
         suffix.reverse()
 
-        # print(suffix)
-
         @lru_cache(None)  # 记忆化dfs
         def helper(start, M):
             if 2 * M >= n - start: return suffix[start]
-            tmp = float('inf')
+            tmp = float('inf')  #
             for X in range(1, 2 * M + 1):
                 tmp = min(tmp, helper(start + X, max(X, M)))
             return suffix[start] - tmp
