@@ -56,13 +56,20 @@ class Solution:
         # base case : dp[0][j]=1
         # dp[i][j] 最少为 dp[i][j-1]
         # 若t[i-1] == s[j-1]，则需要增多dp[i-1][j-1]种
-        dp = [[0] * (len_s + 1) for _ in range(len_t + 1)]
-        dp[0] = [1] * (len_s + 1)
-        for i in range(1, len_t + 1):
-            for j in range(i, len_s + 1):
-                dp[i][j] = dp[i][j - 1]
-                if t[i - 1] == s[j - 1]:
-                    dp[i][j] += dp[i - 1][j - 1]
 
-        # print(dp)
-        return dp[-1][-1]
+        # dp = [[0]*(len_s+1) for _ in range(len_t+1)]
+        # dp[0] = [1]*(len_s+1)
+        # for i in range(1,len_t+1):
+        #     for j in range(i,len_s+1):
+        #         dp[i][j] = dp[i][j-1]
+        #         if t[i-1] == s[j-1]:
+        #             dp[i][j] += dp[i-1][j-1]
+        # return dp[-1][-1]
+
+        dp1, dp2 = [1]*(len_s+1), [0]*(len_s+1)  # 空间压缩到一维
+        for i in range(1,len_t+1):
+            for j in range(i,len_s+1):
+                dp2[j] = dp2[j-1]+dp1[j-1] if t[i-1]==s[j-1] else dp2[j-1]
+            dp1, dp2 = dp2, [0]*(len_s+1)
+        return dp1[-1]
+
