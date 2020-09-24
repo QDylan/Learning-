@@ -50,15 +50,14 @@ requests[i].length == 2
 class Solution:
     def maxSumRangeQuery(self, nums, requests) -> int:
         n = len(nums)
-        cnt, diff, res = [0] * n, [0] * n, 0
+        cnt, res = [0] * (n + 1), 0
         for start, end in requests:  # 构造差分数组
-            diff[start] += 1
-            if end < n - 1: diff[end + 1] -= 1
-        cnt[0] = diff[0]
+            cnt[start] += 1
+            cnt[end + 1] -= 1
         for i in range(1, n):  # 统计出每个数的出现次数
-            cnt[i] = cnt[i - 1] + diff[i]
+            cnt[i] += cnt[i - 1]
         nums.sort()
-        cnt.sort()
+        cnt = sorted(cnt[:n])
         for i in range(n):
             res += cnt[i] * nums[i]
         return res % (10 ** 9 + 7)
