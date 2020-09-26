@@ -1,25 +1,45 @@
 # -*- coding: utf-8 -*-
-"""
- @Time    : 2020-09-01 14:53
- @Author  : QDY
- @FileName: test.py
- @Software: PyCharm
-"""
 
-nums = list(map(int, input().split()))
-res = []
-right = ''
-for num in nums:
-    bin_str = bin(num)[2:]
-    bin_str = (32-len(bin_str))*'0'+bin_str
-    bin_str = list(bin_str)
-    for i in range(0,32,2):
-        bin_str[i],bin_str[i+1] = bin_str[i+1],bin_str[i]
 
-    new = right + ''.join(bin_str)
-    right = new[-2:]
-    res.append(new[:-2])
-res[0] = right+res[0]
-for i in res:
-    print(int(i,2),end=' ')
+# while True:
+#     try:
+#     except:
+#         break
+# for line in sys.stdin:
+#     strs = line.split()
+#
+# n = int(sys.stdin.readline().strip())
+# for i in range(n):
+#     line = sys.stdin.readline().strip()
 
+# sys.setrecursionlimit(500*500)
+#
+#
+import sys
+
+if __name__ == '__main__':
+    n, p = map(int, input().split())
+    items = []
+    for i in range(n):
+        items.append(list(map(int, input().split())))
+
+
+    class solu:
+        def res(self, p, items):
+            self.res = 0
+
+            def dfs(cur, i, rest):
+                if i == n or rest < items[i][1]:
+                    self.res = max(self.res, cur)
+                    return
+                for j in range(items[i][0] + 1):
+                    if j * items[i][1] > rest: break
+                    dfs(cur + j * items[i][2], i + 1, rest - j * items[i][1])
+
+            dfs(0, 0, p)
+            return self.res
+
+
+    items.sort(key=lambda x: x[1])
+    s = solu()
+    print(s.res(p, items))
