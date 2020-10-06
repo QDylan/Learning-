@@ -40,7 +40,6 @@ location.length == 2
 """
 from math import atan2, degrees
 
-
 class Solution:
     def visiblePoints(self, points, angle: int, location) -> int:
         d = []  # 以location为原点，记录每个点的arctan值
