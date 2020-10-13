@@ -40,7 +40,7 @@ from collections import deque
 
 
 class Solution:
-    def maxNumber(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
+    def maxNumber(self, nums1, nums2, k: int):
         res = [0] * k
 
         def merge(A, B):  # 合并两组数组
