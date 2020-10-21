@@ -41,13 +41,12 @@ class Solution:
     def isLongPressedName(self, name: str, typed: str) -> bool:
         i, j = 0, 0
         N, T = len(name), len(typed)
-        while i < N:
-            if name[i] == typed[j]:
+        while j < T:
+            if i < N and name[i] == typed[j]:
                 i += 1
                 j += 1
             elif i > 0 and typed[j] == name[i - 1]:
                 j += 1
             else:
                 return False
-            if i < N and j == T: return False
-        return all(x == name[-1] for x in typed[j:])
+        return i == N
