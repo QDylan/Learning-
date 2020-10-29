@@ -47,6 +47,7 @@ from collections import deque
 class Solution:
     def findBottomLeftValue(self, root) -> int:
         q = deque([root])
+        res = 0
         while q:
             length = len(q)
             for i in range(length):
