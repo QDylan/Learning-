@@ -33,7 +33,7 @@
 class Solution:
 
     def countVowelStrings(self, n: int) -> int:
-        return  math.comb(n + 4, 4) # (n + 4) * (n + 3) * (n + 2) * (n + 1) // 24;
+        return (n + 4) * (n + 3) * (n + 2) * (n + 1) // 24
 
         # def helper(n):  # 返回一个5个数的数组，每个数代表该以元音字母开头有多少种
         #     if n==1:return [1,1,1,1,1]
