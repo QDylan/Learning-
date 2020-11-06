@@ -47,6 +47,7 @@
 
 class Solution:
     def sortByBits(self, arr):
+        return sorted(arr, key=lambda x: (bin(x).count('1'), x))
         # def f(x):
         #     cnt = 0
         #     while x:
@@ -55,4 +56,3 @@ class Solution:
         #         x >>= 1
         #     return cnt
         # return sorted(arr,key=lambda x:(f(x),x))
-        return sorted(arr, key=lambda x: (bin(x).count('1'), x))
