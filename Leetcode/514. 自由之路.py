@@ -40,12 +40,12 @@ class Solution:
     def findRotateSteps(self, ring: str, key: str) -> int:
         size = len(ring)
         pre = [0] * size
-        mx = [[] for _ in range(26)];
+        mx = [[] for _ in range(26)]
         a = ord('a')
         for i in range(size):
             mx[ord(ring[i]) - a].append(i)
         for ix in mx[ord(key[0]) - a]:
-            t = ix;
+            t = ix
             tt = size - ix
             if t <= tt:
                 pre[ix] = t
